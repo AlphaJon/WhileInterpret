@@ -22,6 +22,8 @@
             </label>
             <div id="parseErrorMessage" style="display: none;"></div>
             <button id="execute">D&eacute;marrer l'ex&eacute;cution</button>
+            <button id="demoReverse">Charger la démo "Reverse"</button>
+            <button id="demoConcat">Charger la démo "Concat"</button>
         </span>
         <span id="codeDisplay" style="display: none;">
             <button id="step">Lancer la prochaine instruction</button>
@@ -74,6 +76,33 @@
             document.getElementById("stop").onclick = function(){
                 document.getElementById("codeDisplay").style.display = "none";
                 document.getElementById("inputs").style.removeProperty("display");
+            }
+            document.getElementById("demoReverse").onclick = function(){
+                document.getElementById("v0Input").value = `"a", "b", "c", "d"`;
+                document.getElementById("codeInput").value = `  { 
+    V1 := nil;
+    While V0 {
+      V1 := (cons (hd V0) V1);
+      V0 := (tl V0)
+    }
+  }`;
+            }
+            document.getElementById("demoConcat").onclick = function(){
+                document.getElementById("v0Input").value = `("a", "b", "c", "d");("e", "f", "g")`;
+                document.getElementById("codeInput").value = `  {
+    V1 := (hd V0);
+    V2 := (tl V0) ;
+    V3 := nil;
+    While V1 {
+      V3 := (cons (hd V1) V3);
+      V1 := (tl V1)
+    }
+    V1:=V2;
+    While V3 {
+      V1 := (cons (hd V3) V1);
+      V3 := (tl V3)
+    }
+  }`;
             }
         </script>
     </body>
