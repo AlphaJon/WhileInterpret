@@ -1,0 +1,49 @@
+html {
+    font-family: Helvetica, Arial, sans-serif;
+    background-color: #353333;
+    color: #ffffff;
+}
+
+textarea, input {
+    background-color: #242222;
+    color: #ffffff;
+    border: 1px solid #bbbbbb;
+}
+
+span#inputs, span#variableView, span#codeDisplay {
+    vertical-align: top;
+    display: inline-block;
+    width: 49%;
+}
+
+#v0Input {
+    width: 60%;
+}
+
+textarea#codeInput {
+    width: 100%;
+    height: 60vh;
+}
+
+#parseErrorMessage {
+    padding: 5px;
+    border-radius: 5px;
+    background-color: orange;
+    color: #000000;
+}
+
+.varContainer {
+    /*background-color: inherit;
+    transition-property: background-color;
+    transition-delay: 0.25s;
+    transition-duration: 1s;
+    transition-timing-function: ease-in;*/
+}
+
+/*.varContainer.active {
+    background-color: #50a000;
+}*/
+
+#codeOutput {
+    white-space: pre-wrap;
+}

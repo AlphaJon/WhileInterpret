@@ -1,0 +1,16 @@
+#voici un deuxième programme, représentant la fonction concat où V0 contient initialement une pair contenant les deux listes à concaténer et le résultat est calculé dans V1
+
+{
+ V1 := (hd V0);
+ V2 := (tl V0) ;
+ V3 := nil;
+ While V1 {
+   V3 := (cons (hd V1) V3);
+   V1 := (tl V1)
+   }
+ V1:=V2;
+ While V3 {
+   V1 := (cons (hd V3) V1);
+   V3 := (tl V3)
+   }
+ }

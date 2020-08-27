@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>Interpréteur While</title>
+        <link rel="stylesheet" href="index.css" />
+    </head>
+    <body>
+        <span id="inputs">
+            <!--label>
+                Valers utilisables par le langage  (séparées par des virgules): <br />
+                While({ <input id="values" /> })
+            </label>
+            <br /-->
+            <label>
+                Entrée (V<sub>0</sub>): <input id="v0Input" />
+            </label>
+            <br />
+            <label>
+                Code à exécuter: <br />
+                <textarea id="codeInput" autocapitalize="none" spellcheck="false"></textarea>
+            </label>
+            <div id="parseErrorMessage" style="display: none;"></div>
+            <button id="execute">D&eacute;marrer l'ex&eacute;cution</button>
+        </span>
+        <span id="codeDisplay" style="display: none;">
+            <button id="step">Lancer la prochaine instruction</button>
+            <button id="runAll">Lancer le reste du programme</button>
+            <button id="stop">Arr&ecirc;t du programme</button>
+            <div id="codeOutput"></div>
+        </span>
+        <span id="variableView">
+            Résultat
+            <br />
+            <span id="variables"></span>
+        </span>
+        <script src="lib/peg-0.10.0.js"></script>
+        <script src="grammar.js"></script>
+        <script src="index.js"></script>
+        <script>
+            let currentProgram = null;
+            let parsedCode = null;
+            let parser = peg.generate(grammar, {
+                allowedStartRules: ["program", "inputParse"]
+            });
+            document.getElementById("execute").onclick = function(){
+                let errorEl = document.getElementById("parseErrorMessage");
+                errorEl.style.display = "none";
+                errorEl.textContent = "";
+                try {
+                    let rawV0 = document.getElementById("v0Input").value;
+                    let parsedV0 = parser.parse(rawV0, {startRule: "inputParse"});
+                    
+                    let code = document.getElementById("codeInput").value;
+                    currentProgram = parser.parse(code, {startRule: "program"});
+                    currentProgram.memory.renderer = new MemoryRenderer(document.getElementById("variables"));
+                    currentProgram.memory.setVar(0, parsedV0);
+                    document.getElementById("inputs").style.display = "none";
+                    document.getElementById("codeDisplay").style.removeProperty("display");
+                    document.getElementById("codeOutput").textContent = code;
+                } catch (error) {
+                    console.log(error);
+                    errorEl.textContent = error.message;
+                    errorEl.style.removeProperty("display");
+                }
+                
+            }
+            document.getElementById("step").onclick = function(){
+                currentProgram.run();
+            }
+            document.getElementById("runAll").onclick = function(){
+                currentProgram.runAll();
+            }
+            document.getElementById("stop").onclick = function(){
+                document.getElementById("codeDisplay").style.display = "none";
+                document.getElementById("inputs").style.removeProperty("display");
+            }
+        </script>
+    </body>
+</html>
