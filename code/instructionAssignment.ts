@@ -4,10 +4,10 @@
 class AssignmentInstruction implements Executable {
     public completed = false;
     public varIndex: number;
-    public value: Expression<any, any>;
+    public value: VarExpression<any>;
     private memory: Memory;
 
-    constructor(memory: Memory, varNum: number, value: Expression<any, any>){
+    constructor(memory: Memory, varNum: number, value: VarExpression<any>){
         this.memory = memory;
         this.varIndex = varNum;
         this.value = value;

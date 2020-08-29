@@ -31,33 +31,30 @@ instruction =
 
 elsegroup = "else"i _ elseins:instruction { return elseins }
 
-//returns: Expression
+//returns: Evaluable
+//an instance of the Expression family of classes
 expression = 
     "(" _ expr:expression _ ")" { return expr }
     / varIndex:varName { 
-        return {
-            evaluate: function(){
-                return memory.getVar(varIndex);
-            }
-        }
+        return new MemoryExpression(memory, varIndex);
     }
     / "cons"i _ exprl:expression _ exprr:expression { 
-        return new Expression(
+        return new VarExpression(
             exprl, "concat", exprr
         );
     }
     / "hd"i _ expr:expression {  
-        return new Expression(
+        return new VarExpression(
             expr, "head"
         )
     }
     / "tl"i _ expr:expression {
-        return new Expression(
+        return new VarExpression(
             expr, "tail"
         )
     }
     / "=?" _ exprl:expression _ exprr:expression { 
-        return new Expression(
+        return new VarExpression(
             exprl, "equals", exprr
         )
     }

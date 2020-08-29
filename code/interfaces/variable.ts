@@ -7,8 +7,17 @@ interface Variable extends Evaluable {
     toString(): string;
 }
 
+const whileFuncNames = {
+    concat: "cons",
+    equals: "=?",
+    head: "hd",
+    tail: "tl"
+} as const;
+
 type varFunctionNames<T> = {
-    [K in keyof T]: T[K] extends (...args: any) => Variable ?
-    K
+    [K in keyof T]: T[K] extends (...args: infer R) => Variable ?
+    K //R extends Variable[] ? K : never
     : never
 }[keyof T]
+
+

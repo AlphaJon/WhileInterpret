@@ -1,6 +1,5 @@
 describe("While", function() {
   let parser;
-  let currentProgram;
   //Reverse
   var sampleCode1 = 
   `{ 

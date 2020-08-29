@@ -1,24 +1,4 @@
 "use strict";
-class ConditionalInstruction {
-    constructor(cond) {
-        this.conditionWord = "(?)";
-        this.completed = false;
-        this.cachedCondition = null;
-        this.condition = cond;
-    }
-    resetLoop() {
-        this.completed = false;
-        this.cachedCondition = null;
-    }
-    run() {
-        throw new Error("Direct call on abstract class");
-    }
-    runAll() {
-        while (!this.completed) {
-            this.run();
-        }
-    }
-}
 class Atom {
     constructor(value) {
         this.value = (value === null) ? value : value.trim();
@@ -88,7 +68,19 @@ class Couple {
         return `(${this.head().toString()}, ${this.tail().toString()})`;
     }
 }
-class Expression {
+class MemoryExpression {
+    constructor(memory, varIndex) {
+        this.memory = memory;
+        this.varIndex = varIndex;
+    }
+    evaluate() {
+        return this.memory.getVar(this.varIndex);
+    }
+    toString() {
+        return "V" + this.varIndex;
+    }
+}
+class VarExpression {
     constructor(variable, func, ...params) {
         this.mainVariable = variable;
         this.functionName = func;
@@ -101,6 +93,9 @@ class Expression {
         let result = varParams.map(value => value.evaluate());
         let x = variable[this.functionName];
         return x.apply(variable, result);
+    }
+    toString() {
+        throw new Error("Not implemented");
     }
 }
 class AssignmentInstruction {
@@ -142,6 +137,26 @@ class InstructionBlock {
         if (currentIns.completed) {
             this.position++;
         }
+    }
+    runAll() {
+        while (!this.completed) {
+            this.run();
+        }
+    }
+}
+class ConditionalInstruction {
+    constructor(cond) {
+        this.conditionWord = "(?)";
+        this.completed = false;
+        this.cachedCondition = null;
+        this.condition = cond;
+    }
+    resetLoop() {
+        this.completed = false;
+        this.cachedCondition = null;
+    }
+    run() {
+        throw new Error("Direct call on abstract class");
     }
     runAll() {
         while (!this.completed) {
@@ -236,6 +251,12 @@ class Program extends InstructionBlock {
         this.memory = memory;
     }
 }
+const whileFuncNames = {
+    concat: "cons",
+    equals: "=?",
+    head: "hd",
+    tail: "tl"
+};
 class MemoryRenderer {
     constructor(element) {
         while (element.firstChild) {

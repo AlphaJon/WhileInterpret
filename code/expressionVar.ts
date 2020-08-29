@@ -1,9 +1,9 @@
-class Expression<T extends Evaluable, U extends varFunctionNames<Variable>> implements Evaluable {
-    public mainVariable: T;
-    public functionName: U;
-    public additionalValues: Parameters<Variable[U]>;
+class VarExpression<T extends varFunctionNames<Variable>> implements Evaluable {
+    public mainVariable: Evaluable;
+    public functionName: T;
+    public additionalValues: Variable[]; //Parameters<Variable[T]>;
 
-    constructor(variable: T, func: U, ...params: Parameters<Variable[U]>){
+    constructor(variable: Evaluable, func: T, ...params: Parameters<Variable[T]>){
         this.mainVariable = variable;
         this.functionName = func;
         this.additionalValues = params;
@@ -11,11 +11,16 @@ class Expression<T extends Evaluable, U extends varFunctionNames<Variable>> impl
     evaluate(): Variable {
         console.log("evaluating (" + this.functionName + ")");
         let variable = this.mainVariable.evaluate();
-        let varParams = this.additionalValues as Expression<Evaluable, "evaluate">[];
+        let varParams = this.additionalValues //as Expression<any>[];
         let result = varParams.map(value => value.evaluate());
         let x = variable[this.functionName];
         //@ts-ignore
         return x.apply(variable, result);
+    }
+
+    toString(): string {
+        //TODO
+        throw new Error("Not implemented");
     }
 }
 

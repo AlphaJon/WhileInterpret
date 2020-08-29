@@ -1,7 +1,7 @@
 abstract class ConditionalInstruction implements Executable {
     protected readonly conditionWord: string = "(?)";
     public completed = false;
-    protected condition: Expression<any, any>;
+    protected condition: VarExpression<any>;
     /**
      * We have to avoid computing the condition 
      * after each instuction in the condition body,
@@ -18,7 +18,7 @@ abstract class ConditionalInstruction implements Executable {
      */
     protected cachedCondition: boolean | null = null;
 
-    constructor(cond: Expression<any, any>){
+    constructor(cond: VarExpression<any>){
         this.condition = cond;
     }
 

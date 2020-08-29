@@ -1,4 +1,4 @@
-/// <reference path="./InstructionConditional.ts"/>
+/// <reference path="./instructionConditional.ts"/>
 
 /**
  * An "if" conditional of a Program
@@ -7,7 +7,7 @@ class IfInstruction extends ConditionalInstruction {
     private thenInstructions: Executable;
     private elseInstructions: Executable | null;
 
-    constructor(cond: Expression<any, any>, 
+    constructor(cond: VarExpression<any>, 
         thenIns: Executable, 
         elseIns: Executable | null = null) {
             super(cond);

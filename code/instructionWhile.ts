@@ -1,4 +1,4 @@
-/// <reference path="./InstructionConditional.ts"/>
+/// <reference path="./instructionConditional.ts"/>
 
 /**
  * a "while" conditional of a program
@@ -7,7 +7,7 @@ class WhileInstruction extends ConditionalInstruction {
     readonly conditionWord: string = "While";
     private whileInstructions: Executable;
 
-    constructor(cond: Expression<any, any>, ins: Executable) {
+    constructor(cond: VarExpression<any>, ins: Executable) {
         super(cond);
         this.whileInstructions = ins;
     }
