@@ -1,287 +1,95 @@
-"use strict";
-class Atom {
-    constructor(value) {
-        this.value = (value === null) ? value : value.trim();
+let demos = [{}, {}];
+demos[0].input = `"a", "b", "c", "d"`;
+demos[0].code = `{ 
+    V1 := nil;
+    While V0 {
+        V1 := (cons (hd V0) V1);
+        V0 := (tl V0)
     }
-    concat(otherVar) {
-        return new Couple(this, otherVar);
+}`;
+demos[1].input = `("a", "b", "c", "d");("e", "f", "g")`;
+demos[1].code = `{
+    V1 := (hd V0);
+    V2 := (tl V0) ;
+    V3 := nil;
+    While V1 {
+        V3 := (cons (hd V1) V3);
+        V1 := (tl V1)
     }
-    equals(otherVar) {
-        if (otherVar instanceof Atom
-            && otherVar.value === this.value) {
-            return new Couple(new Atom(null), new Atom(null));
-        }
-        else {
-            return new Atom(null);
-        }
-        ;
+    V1:=V2;
+    While V3 {
+        V1 := (cons (hd V3) V1);
+        V3 := (tl V3)
     }
-    evaluate() {
-        return this;
+}`;
+
+function loadDemo(num){
+    document.getElementById("v0Input").value = demos[num].input;
+    document.getElementById("codeInput").value = demos[num].code;
+}
+
+let currentProgram = null;
+let parsedCode = null;
+
+let parser = peg.generate(grammar, {
+    allowedStartRules: ["program", "inputParse"]
+});
+
+document.getElementById("execute").onclick = function(){
+    let errorEl = document.getElementById("parseErrorMessage");
+    errorEl.style.display = "none";
+    errorEl.textContent = "";
+    try {
+        let rawV0 = document.getElementById("v0Input").value;
+        let parsedV0 = parser.parse(rawV0, {startRule: "inputParse"});
+        
+        let code = document.getElementById("codeInput").value;
+        currentProgram = parser.parse(code, {startRule: "program"});
+        currentProgram.memory.setRenderer(document.getElementById("variables"));
+        currentProgram.memory.setVar(0, parsedV0);
+        document.getElementById("inputs").style.display = "none";
+        document.getElementById("codeDisplay").style.removeProperty("display");
+        //document.getElementById("codeOutput").textContent = code;
+        currentProgram.setRenderer(document.getElementById("codeOutput"));
+    } catch (error) {
+        console.log(error);
+        errorEl.textContent = error.message;
+        errorEl.style.removeProperty("display");
     }
-    head() {
-        return this;
+    
+}
+document.getElementById("step").onclick = function(){
+    currentProgram.run();
+}
+
+let runInterval = null;
+document.getElementById("runAll").onclick = function(){
+    if (runInterval !== null){
+        clearInterval(runInterval);
     }
-    tail() {
-        return new Atom(null);
+    let delay = document.getElementById("runAllDelay").value;
+    if (+delay === 0){
+        currentProgram.runAll();
+    } else {
+        runInterval = setInterval(() => currentProgram.run(), +delay * 1000);
     }
-    toBoolean() {
-        return this.value !== null;
-    }
-    toString() {
-        return this.value === null ? "nil" : '"' + this.value + '"';
+    
+}
+document.getElementById("pause").onclick = function(){
+    if (runInterval !== null){
+        clearInterval(runInterval);
     }
 }
-class Couple {
-    constructor(left, right) {
-        this.left = left;
-        this.right = right;
+document.getElementById("stop").onclick = function(){
+    if (runInterval !== null){
+        clearInterval(runInterval);
     }
-    concat(otherVar) {
-        return new Couple(this, otherVar);
-    }
-    equals(otherVar) {
-        let other = otherVar.evaluate();
-        if (other instanceof Couple
-            && other.head().equals(this.head())
-            && other.tail().equals(this.tail())) {
-            return new Couple(new Atom(null), new Atom(null));
-        }
-        else {
-            return new Atom(null);
-        }
-        ;
-    }
-    evaluate() {
-        return this;
-    }
-    head() {
-        return this.left;
-    }
-    tail() {
-        return this.right;
-    }
-    toBoolean() {
-        return true;
-    }
-    toString() {
-        return `(${this.head().toString()}, ${this.tail().toString()})`;
-    }
+    document.getElementById("codeDisplay").style.display = "none";
+    document.getElementById("inputs").style.removeProperty("display");
 }
-class MemoryExpression {
-    constructor(memory, varIndex) {
-        this.memory = memory;
-        this.varIndex = varIndex;
-    }
-    evaluate() {
-        return this.memory.getVar(this.varIndex);
-    }
-    toString() {
-        return "V" + this.varIndex;
-    }
+document.getElementById("demoReverse").onclick = function(){
+    loadDemo(0);
 }
-class VarExpression {
-    constructor(variable, func, ...params) {
-        this.mainVariable = variable;
-        this.functionName = func;
-        this.additionalValues = params;
-    }
-    evaluate() {
-        console.log("evaluating (" + this.functionName + ")");
-        let variable = this.mainVariable.evaluate();
-        let varParams = this.additionalValues;
-        let result = varParams.map(value => value.evaluate());
-        let x = variable[this.functionName];
-        return x.apply(variable, result);
-    }
-    toString() {
-        throw new Error("Not implemented");
-    }
+document.getElementById("demoConcat").onclick = function(){
+    loadDemo(1);
 }
-class AssignmentInstruction {
-    constructor(memory, varNum, value) {
-        this.completed = false;
-        this.memory = memory;
-        this.varIndex = varNum;
-        this.value = value;
-    }
-    resetLoop() {
-        this.completed = false;
-    }
-    run() {
-        this.memory.setVar(this.varIndex, this.value.evaluate());
-        this.completed = true;
-    }
-    runAll() {
-        this.run();
-    }
-}
-class InstructionBlock {
-    constructor(instructions) {
-        this.instructions = instructions;
-        this.position = 0;
-    }
-    get completed() {
-        return this.position >= this.instructions.length;
-    }
-    resetLoop() {
-        this.instructions.forEach(ins => ins.resetLoop());
-        this.position = 0;
-    }
-    run() {
-        if (this.completed) {
-            return;
-        }
-        let currentIns = this.instructions[this.position];
-        currentIns.run();
-        if (currentIns.completed) {
-            this.position++;
-        }
-    }
-    runAll() {
-        while (!this.completed) {
-            this.run();
-        }
-    }
-}
-class ConditionalInstruction {
-    constructor(cond) {
-        this.conditionWord = "(?)";
-        this.completed = false;
-        this.cachedCondition = null;
-        this.condition = cond;
-    }
-    resetLoop() {
-        this.completed = false;
-        this.cachedCondition = null;
-    }
-    run() {
-        throw new Error("Direct call on abstract class");
-    }
-    runAll() {
-        while (!this.completed) {
-            this.run();
-        }
-    }
-}
-class IfInstruction extends ConditionalInstruction {
-    constructor(cond, thenIns, elseIns = null) {
-        super(cond);
-        this.thenInstructions = thenIns;
-        this.elseInstructions = elseIns;
-    }
-    resetLoop() {
-        var _a;
-        super.resetLoop();
-        this.thenInstructions.resetLoop();
-        (_a = this.elseInstructions) === null || _a === void 0 ? void 0 : _a.resetLoop();
-    }
-    run() {
-        if (this.cachedCondition === null) {
-            this.cachedCondition = this.condition.evaluate().toBoolean();
-            return;
-        }
-        if (this.cachedCondition) {
-            this.thenInstructions.run();
-            this.completed = this.thenInstructions.completed;
-        }
-        else {
-            if (this.elseInstructions) {
-                this.elseInstructions.run();
-                this.completed = this.elseInstructions.completed;
-            }
-            else {
-                this.completed = true;
-            }
-        }
-    }
-}
-class WhileInstruction extends ConditionalInstruction {
-    constructor(cond, ins) {
-        super(cond);
-        this.conditionWord = "While";
-        this.whileInstructions = ins;
-    }
-    resetLoop() {
-        super.resetLoop();
-        this.whileInstructions.resetLoop();
-    }
-    run() {
-        if (this.cachedCondition === null) {
-            this.cachedCondition = this.condition.evaluate().toBoolean();
-            return;
-        }
-        if (this.cachedCondition) {
-            this.whileInstructions.run();
-            if (this.whileInstructions.completed) {
-                this.resetLoop();
-            }
-        }
-        else {
-            this.completed = true;
-        }
-    }
-}
-class Memory {
-    constructor() {
-        this.renderer = null;
-        this.variables = [];
-    }
-    getVar(index) {
-        if (this.variables.length <= index) {
-            return new Atom(null);
-        }
-        console.log(`Get var ${index} with value ${this.variables[index]}`);
-        return this.variables[index];
-    }
-    setVar(index, value) {
-        var _a, _b;
-        console.log(`Set var ${index} to ${value}`);
-        while (index >= this.variables.length) {
-            (_a = this.renderer) === null || _a === void 0 ? void 0 : _a.create(this.variables.length);
-            this.variables.push(new Atom(null));
-        }
-        this.variables[index] = value;
-        (_b = this.renderer) === null || _b === void 0 ? void 0 : _b.update(index, value.toString());
-    }
-}
-class Program extends InstructionBlock {
-    constructor(memory, block) {
-        super(block.instructions);
-        this.memory = memory;
-    }
-}
-const whileFuncNames = {
-    concat: "cons",
-    equals: "=?",
-    head: "hd",
-    tail: "tl"
-};
-class MemoryRenderer {
-    constructor(element) {
-        while (element.firstChild) {
-            element.removeChild(element.firstChild);
-        }
-        this.element = element;
-    }
-    create(varIndex) {
-        let tmpIndex = "" + varIndex;
-        let varContainer = document.createElement("div");
-        varContainer.classList.add("varContainer");
-        varContainer.setAttribute("while-varIndex", tmpIndex);
-        this.element.appendChild(varContainer);
-        let varValue = document.createElement("span");
-        varValue.textContent = "V" + tmpIndex + " = ";
-        varContainer.appendChild(varValue);
-        let varContents = document.createElement("span");
-        varContents.textContent = "nil";
-        varContents.classList.add("varContents");
-        varContainer.appendChild(varContents);
-    }
-    update(index, value) {
-        let render = document.querySelector(`.varContainer[while-varIndex="${index}"]`);
-        let renderContent = render.getElementsByClassName("varContents")[0];
-        renderContent.textContent = value;
-    }
-}
-//# sourceMappingURL=index.js.map

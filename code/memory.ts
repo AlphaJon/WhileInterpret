@@ -1,6 +1,6 @@
 class Memory {
     private variables: Variable[];
-    public renderer: MemoryRenderer | null;
+    private renderer: MemoryRenderer | null;
 
     constructor() {
         this.renderer = null;
@@ -19,12 +19,16 @@ class Memory {
     setVar(index: number, value: Variable): void {
         console.log(`Set var ${index} to ${value}`);
         while (index >= this.variables.length){
-            this.renderer?.create(this.variables.length);
+            this.renderer?.createContainer(this.variables.length);
             this.variables.push(new Atom(null));
         }
         this.variables[index] = value;
         
         this.renderer?.update(index, value.toString());
+    }
+
+    setRenderer(element: HTMLElement){
+        this.renderer = new MemoryRenderer(element);
     }
     
 }

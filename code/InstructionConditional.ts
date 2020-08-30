@@ -1,5 +1,7 @@
-abstract class ConditionalInstruction implements Executable {
-    protected readonly conditionWord: string = "(?)";
+/// <reference path="./instructionBase.ts"/>
+
+abstract class ConditionalInstruction extends BaseInstruction {
+    abstract conditionWord: string;
     public completed = false;
     protected condition: VarExpression<any>;
     /**
@@ -19,7 +21,14 @@ abstract class ConditionalInstruction implements Executable {
     protected cachedCondition: boolean | null = null;
 
     constructor(cond: VarExpression<any>){
+        super();
         this.condition = cond;
+    }
+
+    focus(state: boolean = true) {
+        if (this.renderer){
+            this.condition.getRenderer().toggleFocus(state);
+        }
     }
 
     resetLoop() {
@@ -27,9 +36,7 @@ abstract class ConditionalInstruction implements Executable {
         this.cachedCondition = null; //NOT false
     }
 
-    run() {
-        throw new Error("Direct call on abstract class");
-    }
+    abstract run(): void;
 
     runAll(){
         while (!this.completed){

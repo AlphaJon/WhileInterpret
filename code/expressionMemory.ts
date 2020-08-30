@@ -1,8 +1,11 @@
-class MemoryExpression implements Evaluable {
+/// <reference path="./expressionBase.ts"/>
+
+class MemoryExpression extends BaseExpression {
     private memory: Memory;
-    private varIndex: number
+    private varIndex: number;
 
     constructor(memory: Memory, varIndex: number){
+        super();
         this.memory = memory;
         this.varIndex = varIndex;
     }

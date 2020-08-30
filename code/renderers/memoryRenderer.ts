@@ -1,5 +1,5 @@
-class MemoryRenderer {
-    private element: HTMLElement;
+class MemoryRenderer implements BaseRenderer {
+    element: HTMLElement;
     
     constructor(element: HTMLElement){
         //Empty previous contents
@@ -9,7 +9,7 @@ class MemoryRenderer {
         this.element = element;
     }
 
-    create(varIndex: number){
+    createContainer(varIndex: number){
         let tmpIndex: string = "" + varIndex;
 
         let varContainer = document.createElement("div");

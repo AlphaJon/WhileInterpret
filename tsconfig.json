@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "outFile": "./index.js",
+        "outFile": "./while.js",
         //"outDir": "./out",
         "allowJs": true,
         "sourceMap": true,

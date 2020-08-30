@@ -1,13 +1,17 @@
-class VarExpression<T extends varFunctionNames<Variable>> implements Evaluable {
+/// <reference path="./expressionBase.ts"/>
+
+class VarExpression<T extends varFunctionNames<Variable>> extends BaseExpression {
     public mainVariable: Evaluable;
     public functionName: T;
-    public additionalValues: Variable[]; //Parameters<Variable[T]>;
+    public additionalValues: Evaluable[]; //Parameters<Variable[T]>;
 
     constructor(variable: Evaluable, func: T, ...params: Parameters<Variable[T]>){
+        super();
         this.mainVariable = variable;
         this.functionName = func;
         this.additionalValues = params;
     }
+
     evaluate(): Variable {
         console.log("evaluating (" + this.functionName + ")");
         let variable = this.mainVariable.evaluate();
@@ -19,8 +23,16 @@ class VarExpression<T extends varFunctionNames<Variable>> implements Evaluable {
     }
 
     toString(): string {
-        //TODO
-        throw new Error("Not implemented");
+        let funcDisplayName = whileFuncNames[this.functionName];
+        let paramDisplays = this.additionalValues.map(function(value){
+            if (value instanceof VarExpression) {
+                return `(${value.toString()})`;
+            }
+            return value.toString();
+        });
+        return funcDisplayName + " " 
+            + this.mainVariable.toString() + " " 
+            + paramDisplays.join(" ");
     }
 }
 

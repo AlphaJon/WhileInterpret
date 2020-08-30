@@ -7,4 +7,18 @@ class Program extends InstructionBlock {
         super(block.instructions);
         this.memory = memory;
     }
+
+    focus() {
+        if (this.renderer) {
+            this.instructions[0].getRenderer().toggleFocus(true);
+        }
+    }
+
+    setRenderer(element: HTMLElement){
+        while (element.firstChild){
+            element.removeChild(element.firstChild);
+        }
+        this.getRenderer().addParent(element);
+        this.focus();
+    }
 }

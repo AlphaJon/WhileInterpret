@@ -4,12 +4,22 @@
  * a "while" conditional of a program
  */
 class WhileInstruction extends ConditionalInstruction {
-    readonly conditionWord: string = "While";
-    private whileInstructions: Executable;
+    readonly conditionWord = "While";
+    private whileInstructions: BaseInstruction;
 
-    constructor(cond: VarExpression<any>, ins: Executable) {
+    constructor(cond: VarExpression<any>, ins: BaseInstruction) {
         super(cond);
         this.whileInstructions = ins;
+    }
+
+    getRenderer(): InstructionRenderer {
+        if (!this.renderer){
+            this.renderer = new InstructionRenderer();
+            this.renderer.element.prepend(this.conditionWord + " ");
+            this.renderer.addChild(this.condition.getRenderer());
+            this.renderer.addChild(this.whileInstructions.getRenderer());
+        }
+        return this.renderer;
     }
 
     resetLoop(){
@@ -21,6 +31,15 @@ class WhileInstruction extends ConditionalInstruction {
         //Evaluating the condition takes one "run" call
         if (this.cachedCondition === null) {
             this.cachedCondition = this.condition.evaluate().toBoolean();
+            if (this.renderer){
+                this.condition.getRenderer().toggleFocus(false);
+            }
+            if (this.renderer && this.cachedCondition){
+                this.whileInstructions.focus();
+            }
+            if (!this.cachedCondition){
+                this.completed = true;
+            }
             return;
         }
 
@@ -29,10 +48,18 @@ class WhileInstruction extends ConditionalInstruction {
             //If we are at end of loop
             if (this.whileInstructions.completed){
                 this.resetLoop();
+                this.focus();
+                this.whileInstructions.focus(false);
             }
         } else {
             this.completed = true;
         }
+    }
+
+    toString(): string {
+        return this.conditionWord + " "
+        + this.condition.toString() + " "
+        + this.whileInstructions.toString();
     }
 }
 

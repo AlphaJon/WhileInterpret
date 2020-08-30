@@ -1,0 +1,3 @@
+interface BaseRenderer {
+    element: HTMLElement;
+}

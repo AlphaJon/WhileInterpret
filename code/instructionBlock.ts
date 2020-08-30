@@ -2,21 +2,42 @@
  * A series of Executables
  * This may contain other InstructionBlocks
  */
-class InstructionBlock implements Executable {
-    public instructions: Executable[];
+class InstructionBlock extends BaseInstruction {
+    public instructions: BaseInstruction[];
     public position: number;
 
     get completed(){
         return this.position >= this.instructions.length;
     }
 
-    constructor(
-        //condition: Instruction, 
-        instructions: Executable[]) {
-            //this.condition = condition;
-            this.instructions = instructions;
-            //this.elseInstructions = null;
-            this.position = 0;
+    set completed(value: boolean){
+        //Do nothing
+    }
+
+    constructor(instructions: BaseInstruction[]) {
+        super();
+        this.instructions = instructions;
+        this.position = 0;
+    }
+
+    focus(state: boolean = true) {
+        if (this.renderer) {
+            this.renderer.toggleFocus(state);
+            this.instructions[0].getRenderer().toggleFocus(state);
+        }
+    }
+
+    getRenderer(): InstructionRenderer {
+        if (!this.renderer){
+            this.renderer = new InstructionRenderer();
+            //this.renderer.element.prepend("{");
+            this.instructions.forEach(ins => 
+                this.renderer!.addChild(ins.getRenderer())
+            )
+            //this.renderer.element.append("}");
+        }
+        
+        return this.renderer;
     }
 
     resetLoop(){
@@ -32,7 +53,14 @@ class InstructionBlock implements Executable {
         currentIns.run();
         if (currentIns.completed) {
             this.position++;
+            if (this.renderer){
+                currentIns.getRenderer().toggleFocus(false);
+                if (this.position < this.instructions.length){
+                    this.instructions[this.position].focus();
+                }
+            }
         }
+        
     }
 
     runAll(){
@@ -41,11 +69,14 @@ class InstructionBlock implements Executable {
         }
     }
 
-    /*get source(): string {
+    toString(): string {
+        if (this.instructions.length === 0) {
+            return "{}";
+        }
         let sourceString: string = 
             "{\n"
-            + this.instructions.map(value => value.source).join(";\n")
+            + this.instructions.map(value => value.toString()).join(";\n")
             + "\n}";
         return sourceString;
-    }*/
+    }
 }

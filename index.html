@@ -28,6 +28,10 @@
         <span id="codeDisplay" style="display: none;">
             <button id="step">Lancer la prochaine instruction</button>
             <button id="runAll">Lancer le reste du programme</button>
+            <label>Délai:
+                <input id="runAllDelay" type="number" min="0" max="60" step="any" value="5" size="4" />
+            </label>
+            <button id="pause">Pause</button>
             <button id="stop">Arr&ecirc;t du programme</button>
             <div id="codeOutput"></div>
         </span>
@@ -38,72 +42,7 @@
         </span>
         <script src="lib/peg-0.10.0.js"></script>
         <script src="grammar.js"></script>
+        <script src="while.js"></script>
         <script src="index.js"></script>
-        <script>
-            let currentProgram = null;
-            let parsedCode = null;
-            let parser = peg.generate(grammar, {
-                allowedStartRules: ["program", "inputParse"]
-            });
-            document.getElementById("execute").onclick = function(){
-                let errorEl = document.getElementById("parseErrorMessage");
-                errorEl.style.display = "none";
-                errorEl.textContent = "";
-                try {
-                    let rawV0 = document.getElementById("v0Input").value;
-                    let parsedV0 = parser.parse(rawV0, {startRule: "inputParse"});
-                    
-                    let code = document.getElementById("codeInput").value;
-                    currentProgram = parser.parse(code, {startRule: "program"});
-                    currentProgram.memory.renderer = new MemoryRenderer(document.getElementById("variables"));
-                    currentProgram.memory.setVar(0, parsedV0);
-                    document.getElementById("inputs").style.display = "none";
-                    document.getElementById("codeDisplay").style.removeProperty("display");
-                    document.getElementById("codeOutput").textContent = code;
-                } catch (error) {
-                    console.log(error);
-                    errorEl.textContent = error.message;
-                    errorEl.style.removeProperty("display");
-                }
-                
-            }
-            document.getElementById("step").onclick = function(){
-                currentProgram.run();
-            }
-            document.getElementById("runAll").onclick = function(){
-                currentProgram.runAll();
-            }
-            document.getElementById("stop").onclick = function(){
-                document.getElementById("codeDisplay").style.display = "none";
-                document.getElementById("inputs").style.removeProperty("display");
-            }
-            document.getElementById("demoReverse").onclick = function(){
-                document.getElementById("v0Input").value = `"a", "b", "c", "d"`;
-                document.getElementById("codeInput").value = `  { 
-    V1 := nil;
-    While V0 {
-      V1 := (cons (hd V0) V1);
-      V0 := (tl V0)
-    }
-  }`;
-            }
-            document.getElementById("demoConcat").onclick = function(){
-                document.getElementById("v0Input").value = `("a", "b", "c", "d");("e", "f", "g")`;
-                document.getElementById("codeInput").value = `  {
-    V1 := (hd V0);
-    V2 := (tl V0) ;
-    V3 := nil;
-    While V1 {
-      V3 := (cons (hd V1) V3);
-      V1 := (tl V1)
-    }
-    V1:=V2;
-    While V3 {
-      V1 := (cons (hd V3) V1);
-      V3 := (tl V3)
-    }
-  }`;
-            }
-        </script>
     </body>
 </html>

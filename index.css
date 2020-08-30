@@ -32,18 +32,34 @@ textarea#codeInput {
     color: #000000;
 }
 
-.varContainer {
-    /*background-color: inherit;
-    transition-property: background-color;
-    transition-delay: 0.25s;
-    transition-duration: 1s;
-    transition-timing-function: ease-in;*/
-}
-
-/*.varContainer.active {
-    background-color: #50a000;
-}*/
-
 #codeOutput {
     white-space: pre-wrap;
+}
+
+.instruction .instruction {
+    padding-left: 1em;
+}
+
+.focused {
+    background-color: hsla(60, 100%, 25%, 1);
+}
+
+.focused .focused {
+    background-color: hsla(120, 100%, 25%, 1);
+}
+
+.focused .focused .focused{
+    background-color: hsla(180, 100%, 25%, 1);
+}
+
+.focused .focused .focused .focused {
+    background-color: hsla(240, 100%, 25%, 1);
+}
+
+.focused .focused .focused .focused .focused {
+    background-color: hsla(300, 100%, 25%, 1);
+}
+
+.focused .focused .focused .focused .focused .focused {
+    background-color: hsla(0, 100%, 25%, 1);
 }
