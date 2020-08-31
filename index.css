@@ -45,6 +45,10 @@ textarea#codeInput {
     white-space: pre-wrap;
 }
 
+.instruction > .instruction::before {
+    content: "↳ ";
+}
+
 .instruction > .instruction,
 .instructionBlock > .instruction {
     margin-left: 1em;
