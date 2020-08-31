@@ -109,15 +109,16 @@ class VarExpression extends BaseExpression {
     }
     toString() {
         let funcDisplayName = whileFuncNames[this.functionName];
-        let paramDisplays = this.additionalValues.map(function (value) {
+        let params = this.additionalValues.slice(0);
+        params.unshift(this.mainVariable);
+        let display = params.map(function (value) {
             if (value instanceof VarExpression) {
                 return `(${value.toString()})`;
             }
             return value.toString();
-        });
+        }).join(" ");
         return funcDisplayName + " "
-            + this.mainVariable.toString() + " "
-            + paramDisplays.join(" ");
+            + display;
     }
 }
 let globals = {
