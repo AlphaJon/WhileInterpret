@@ -1,9 +1,9 @@
 class InstructionRenderer implements BaseRenderer {
     element: HTMLElement;
 
-    constructor(content: string | null = null){
+    constructor(content: string | null = null, elClass: string = "instruction"){
         let el = document.createElement("div");
-        el.classList.add("instruction");
+        el.classList.add(...elClass.split(" "));
         el.textContent = content;
         this.element = el;
     }

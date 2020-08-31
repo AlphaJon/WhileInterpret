@@ -71,7 +71,12 @@ document.getElementById("runAll").onclick = function(){
     if (+delay === 0){
         currentProgram.runAll();
     } else {
-        runInterval = setInterval(() => currentProgram.run(), +delay * 1000);
+        runInterval = setInterval(() => {
+            currentProgram.run();
+            if (currentProgram.completed) {
+                clearInterval(runInterval);
+            }
+        }, +delay * 1000);
     }
     
 }

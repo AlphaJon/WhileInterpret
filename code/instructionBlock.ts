@@ -22,14 +22,16 @@ class InstructionBlock extends BaseInstruction {
 
     focus(state: boolean = true) {
         if (this.renderer) {
-            this.renderer.toggleFocus(state);
+            if (globals.recursiveHighlight){
+                this.renderer.toggleFocus(state);
+            }
             this.instructions[0].getRenderer().toggleFocus(state);
         }
     }
 
     getRenderer(): InstructionRenderer {
         if (!this.renderer){
-            this.renderer = new InstructionRenderer();
+            this.renderer = new InstructionRenderer(null, "instructionBlock");
             //this.renderer.element.prepend("{");
             this.instructions.forEach(ins => 
                 this.renderer!.addChild(ins.getRenderer())

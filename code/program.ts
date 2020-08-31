@@ -18,6 +18,7 @@ class Program extends InstructionBlock {
         while (element.firstChild){
             element.removeChild(element.firstChild);
         }
+        this.getRenderer().element.classList.replace("instructionBlock", "program");
         this.getRenderer().addParent(element);
         this.focus();
     }

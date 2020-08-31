@@ -32,12 +32,27 @@ textarea#codeInput {
     color: #000000;
 }
 
+.tooltip {
+    text-decoration-line: underline;
+    text-decoration-style: dotted;
+}
+
+.tooltip:hover {
+    cursor: help;
+}
+
 #codeOutput {
     white-space: pre-wrap;
 }
 
-.instruction .instruction {
-    padding-left: 1em;
+.instruction > .instruction,
+.instructionBlock > .instruction {
+    margin-left: 1em;
+}
+
+.instructionBlock {
+    border-left-style: solid;
+    border-left-width: 1px;
 }
 
 .focused {

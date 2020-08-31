@@ -22,8 +22,10 @@ class IfInstruction extends ConditionalInstruction {
             this.renderer = new InstructionRenderer();
             this.renderer.element.prepend(this.conditionWord + " ");
             this.renderer.addChild(this.condition.getRenderer());
+            this.renderer.element.append(" then ");
             this.renderer.addChild(this.thenInstructions.getRenderer());
             if (this.elseInstructions){
+                this.renderer.element.append("else");
                 this.renderer.addChild(this.elseInstructions.getRenderer());
             }
         }

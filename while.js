@@ -120,6 +120,20 @@ class VarExpression extends BaseExpression {
             + paramDisplays.join(" ");
     }
 }
+let globals = {
+    get recursiveHighlight() {
+        let el = document.getElementById("recursiveHighlight");
+        if (!el)
+            return false;
+        return el.checked;
+    },
+    set recursiveHighlight(value) {
+        let el = document.getElementById("recursiveHighlight");
+        if (!el)
+            return;
+        el.checked = value;
+    }
+};
 class BaseInstruction {
     constructor() {
         this.completed = false;
@@ -187,13 +201,15 @@ class InstructionBlock extends BaseInstruction {
     }
     focus(state = true) {
         if (this.renderer) {
-            this.renderer.toggleFocus(state);
+            if (globals.recursiveHighlight) {
+                this.renderer.toggleFocus(state);
+            }
             this.instructions[0].getRenderer().toggleFocus(state);
         }
     }
     getRenderer() {
         if (!this.renderer) {
-            this.renderer = new InstructionRenderer();
+            this.renderer = new InstructionRenderer(null, "instructionBlock");
             this.instructions.forEach(ins => this.renderer.addChild(ins.getRenderer()));
         }
         return this.renderer;
@@ -268,8 +284,10 @@ class IfInstruction extends ConditionalInstruction {
             this.renderer = new InstructionRenderer();
             this.renderer.element.prepend(this.conditionWord + " ");
             this.renderer.addChild(this.condition.getRenderer());
+            this.renderer.element.append(" then ");
             this.renderer.addChild(this.thenInstructions.getRenderer());
             if (this.elseInstructions) {
+                this.renderer.element.append("else");
                 this.renderer.addChild(this.elseInstructions.getRenderer());
             }
         }
@@ -421,6 +439,7 @@ class Program extends InstructionBlock {
         while (element.firstChild) {
             element.removeChild(element.firstChild);
         }
+        this.getRenderer().element.classList.replace("instructionBlock", "program");
         this.getRenderer().addParent(element);
         this.focus();
     }
@@ -449,9 +468,9 @@ class ExpressionRenderer {
     }
 }
 class InstructionRenderer {
-    constructor(content = null) {
+    constructor(content = null, elClass = "instruction") {
         let el = document.createElement("div");
-        el.classList.add("instruction");
+        el.classList.add(...elClass.split(" "));
         el.textContent = content;
         this.element = el;
     }
