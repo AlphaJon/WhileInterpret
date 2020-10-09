@@ -1,5 +1,3 @@
-let memory;
-let grammar = String.raw`
 { 
     memory = new Memory();
 }
@@ -85,9 +83,8 @@ variable =
     }
 
 //returns: string | null
-rawValue = "\"" valuename:[^\"]+ "\"" { return valuename.join(""); }
+rawValue = valuename:[A-Za-z0-9]+ { return valuename.join(""); }
     / "nil"i { return null; }
     
 _ "whitespace" = 
     $([ \t\n\r])* { return undefined }
-`;

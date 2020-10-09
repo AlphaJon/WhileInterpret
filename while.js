@@ -29,7 +29,7 @@ class Atom {
         return this.value !== null;
     }
     toString() {
-        return this.value === null ? "nil" : '"' + this.value + '"';
+        return this.value === null ? "nil" : this.value;
     }
 }
 class Couple {
@@ -445,6 +445,7 @@ class Program extends InstructionBlock {
         this.focus();
     }
 }
+let memory;
 const whileFuncNames = {
     "concat": "cons",
     "equals": "=?",

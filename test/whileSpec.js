@@ -1,5 +1,5 @@
 describe("While", function() {
-  let parser;
+  let program_parser, input_parser;
   //Reverse
   var sampleCode1 = 
   `{ 
@@ -27,10 +27,10 @@ describe("While", function() {
     }
   }`;
 
-  var input1 = `"a", "b", "c", "d"`;
-  var input2 = `("a", "b", "c", "d");("e", "f", "g")`;
-  var output1 = `"d", "c", "b", "a"`;
-  var output2 = `"a", "b", "c", "d", "e", "f", "g"`
+  var input1 = `a, b, c, d`;
+  var input2 = `(a, b, c, d);(e, f, g)`;
+  var output1 = `d, c, b, a`;
+  var output2 = `a, b, c, d, e, f, g`
 
   var variable1 = new Couple(
     new Atom("a"), 
@@ -58,32 +58,35 @@ describe("While", function() {
   var variable2 = new Couple(variable1, partialVar2);
 
   beforeEach(function() {
-    parser = peg.generate(grammar, {
-      allowedStartRules: ["program", "inputParse"]
+    program_parser = peg.generate(grammar_easyread, {
+      allowedStartRules: ["program"]
+    });
+    input_parser = peg.generate(grammar_input, {
+      allowedStartRules: ["inputParse"]
     });
   });
 
   it("should parse inputs properly", function() {
-    let parse1 = parser.parse(input1, {startRule: "inputParse"});
+    let parse1 = input_parser.parse(input1, {startRule: "inputParse"});
     console.log(parse1.toString());
     expect(parse1.equals(variable1).toBoolean()).toBeTrue();
 
-    let parse2 = parser.parse(input2, {startRule: "inputParse"});
+    let parse2 = input_parser.parse(input2, {startRule: "inputParse"});
     console.log(parse2.toString());
     expect(parse2.equals(variable2).toBoolean()).toBeTrue();
   });
 
-  describe("program parsing", function() {
+  describe("program parsing, easyread syntax", function() {
     let parse1, parse2, out1, out2;
     beforeEach(function() {
-      parse1 = parser.parse(input1, {startRule: "inputParse"});
-      parse2 = parser.parse(input2, {startRule: "inputParse"});
-      out1 = parser.parse(output1, {startRule: "inputParse"});
-      out2 = parser.parse(output2, {startRule: "inputParse"});
+      parse1 = input_parser.parse(input1, {startRule: "inputParse"});
+      parse2 = input_parser.parse(input2, {startRule: "inputParse"});
+      out1 = input_parser.parse(output1, {startRule: "inputParse"});
+      out2 = input_parser.parse(output2, {startRule: "inputParse"});
     });
 
     it("should parse and run the reverse program", function() {
-      let code1 = parser.parse(sampleCode1, {startRule: "program"});
+      let code1 = program_parser.parse(sampleCode1, {startRule: "program"});
       code1.memory.setVar(0, parse1);
       code1.runAll();
       expect(
@@ -95,7 +98,7 @@ describe("While", function() {
     });
 
     it("should parse and run the concat program", function() {
-      let code2 = parser.parse(sampleCode2, {startRule: "program"});
+      let code2 = program_parser.parse(sampleCode2, {startRule: "program"});
       code2.memory.setVar(0, parse2);
       code2.runAll();
       expect(

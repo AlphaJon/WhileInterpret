@@ -37,6 +37,6 @@ class Atom implements Variable {
     }
 
     toString(): string {
-        return this.value === null ? "nil" : '"'+this.value+'"';
+        return this.value === null ? "nil" : this.value;
     }
 }

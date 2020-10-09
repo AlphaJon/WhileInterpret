@@ -23,3 +23,5 @@ class Program extends InstructionBlock {
         this.focus();
     }
 }
+
+let memory: Memory;

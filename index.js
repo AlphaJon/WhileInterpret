@@ -1,5 +1,5 @@
 let demos = [{}, {}];
-demos[0].input = `"a", "b", "c", "d"`;
+demos[0].input = `a, b, c, d`;
 demos[0].code = `{ 
     V1 := nil;
     While V0 {
@@ -7,7 +7,7 @@ demos[0].code = `{
         V0 := (tl V0)
     }
 }`;
-demos[1].input = `("a", "b", "c", "d");("e", "f", "g")`;
+demos[1].input = `(a, b, c, d);(e, f, g)`;
 demos[1].code = `{
     V1 := (hd V0);
     V2 := (tl V0) ;
@@ -31,8 +31,12 @@ function loadDemo(num){
 let currentProgram = null;
 let parsedCode = null;
 
-let parser = peg.generate(grammar, {
-    allowedStartRules: ["program", "inputParse"]
+let program_parser = peg.generate(grammar_easyread, {
+    allowedStartRules: ["program"]
+});
+
+let input_parser = peg.generate(grammar_input, {
+    allowedStartRules: ["inputParse"]
 });
 
 document.getElementById("execute").onclick = function(){
@@ -41,10 +45,10 @@ document.getElementById("execute").onclick = function(){
     errorEl.textContent = "";
     try {
         let rawV0 = document.getElementById("v0Input").value;
-        let parsedV0 = parser.parse(rawV0, {startRule: "inputParse"});
+        let parsedV0 = input_parser.parse(rawV0, {startRule: "inputParse"});
         
         let code = document.getElementById("codeInput").value;
-        currentProgram = parser.parse(code, {startRule: "program"});
+        currentProgram = program_parser.parse(code, {startRule: "program"});
         currentProgram.memory.setRenderer(document.getElementById("variables"));
         currentProgram.memory.setVar(0, parsedV0);
         document.getElementById("inputs").style.display = "none";
