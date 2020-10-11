@@ -2,8 +2,7 @@
 
 abstract class ConditionalInstruction extends BaseInstruction {
     abstract conditionWord: string;
-    public completed = false;
-    protected condition: VarExpression<any>;
+    protected condition: VarExpression;
     /**
      * We have to avoid computing the condition 
      * after each instuction in the condition body,
@@ -20,16 +19,16 @@ abstract class ConditionalInstruction extends BaseInstruction {
      */
     protected cachedCondition: boolean | null = null;
 
-    constructor(cond: VarExpression<any>){
+    constructor(cond: VarExpression){
         super();
         this.condition = cond;
     }
 
-    focus(state: boolean = true) {
+    /*focus(state: boolean = true) {
         if (this.renderer){
             this.condition.getRenderer().toggleFocus(state);
         }
-    }
+    }*/
 
     resetLoop() {
         this.completed = false;

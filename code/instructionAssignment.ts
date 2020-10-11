@@ -4,29 +4,25 @@
  * An assignment instruction
  */
 class AssignmentInstruction extends BaseInstruction {
-    public completed = false;
     public varIndex: number;
-    public value: VarExpression<any>;
+    public value: VarExpression;
     private memory: Memory;
 
-    constructor(memory: Memory, varNum: number, value: VarExpression<any>){
+    constructor(memory: Memory, varNum: number, value: VarExpression){
         super();
         this.memory = memory;
         this.varIndex = varNum;
         this.value = value;
     }
 
-    focus(state: boolean = true) {
+    /*focus(state: boolean = true) {
         this.renderer?.toggleFocus(state);
-    }
-
-    resetLoop(){
-        this.completed = false;
-    }
+    }*/
 
     run(){
         this.memory.setVar(this.varIndex, this.value.evaluate());
-        this.renderer?.toggleFocus(false);
+        //this.renderer?.toggleFocus(false);
+        this.active = false;
         this.completed = true;
     }
 

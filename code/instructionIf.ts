@@ -9,7 +9,7 @@ class IfInstruction extends ConditionalInstruction {
     private thenInstructions: BaseInstruction;
     private elseInstructions: BaseInstruction | null;
 
-    constructor(cond: VarExpression<any>, 
+    constructor(cond: VarExpression, 
         thenIns: BaseInstruction, 
         elseIns: BaseInstruction | null = null) {
             super(cond);
@@ -17,7 +17,7 @@ class IfInstruction extends ConditionalInstruction {
             this.elseInstructions = elseIns;
     }
 
-    getRenderer(): InstructionRenderer {
+    /*getRenderer(): InstructionRenderer {
         if (!this.renderer){
             this.renderer = new InstructionRenderer();
             this.renderer.element.prepend(this.conditionWord + " ");
@@ -31,7 +31,7 @@ class IfInstruction extends ConditionalInstruction {
         }
         
         return this.renderer;
-    }
+    }*/
 
     resetLoop(){
         super.resetLoop();
@@ -43,16 +43,17 @@ class IfInstruction extends ConditionalInstruction {
         //Evaluating the condition takes one "run" call
         if (this.cachedCondition === null) {
             this.cachedCondition = this.condition.evaluate().toBoolean();
-            if (this.renderer) {
-                this.condition.getRenderer().toggleFocus(false);
-            }
-            if (this.renderer && this.cachedCondition) {
-                this.thenInstructions.focus();
+            if (this.cachedCondition) {
+                this.thenInstructions.active = true;
             } else {
-                this.elseInstructions?.focus();
-            }
-            if (!this.cachedCondition && !this.elseInstructions){
-                this.completed = true;
+                //Condition ended up false
+                if (this.elseInstructions) {
+                    this.elseInstructions.active = true;
+                } else {
+                    //Condition is false AND there is no "else" block
+                    this.active = false;
+                    this.completed = true;
+                }
             }
             return;
         }
@@ -61,14 +62,14 @@ class IfInstruction extends ConditionalInstruction {
             this.thenInstructions.run();
             this.completed = this.thenInstructions.completed;
             if (this.completed){
-                this.thenInstructions.focus(false);
+                this.active = false;
             }
         } else {
             if (this.elseInstructions){
                 this.elseInstructions.run();
                 this.completed = this.elseInstructions.completed;
                 if (this.completed){
-                    this.elseInstructions.focus(false);
+                    this.active = false;
                 }
             } else {
                 this.completed = true;

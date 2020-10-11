@@ -1,5 +1,10 @@
 interface Executable {
     /**
+     * Indicates if the current instruction is running.
+     * When it completes, this becomes `false`
+     */
+    active: boolean;
+    /**
      * Indicates if the current instruction is completed.
      * Looping over an instruction will reset this.
      */

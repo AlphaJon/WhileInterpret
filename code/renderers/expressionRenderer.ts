@@ -14,6 +14,5 @@ class ExpressionRenderer implements BaseRenderer {
 
     remove() {
         this.element.parentElement?.removeChild(this.element);
-        delete this.element;
     }
 }

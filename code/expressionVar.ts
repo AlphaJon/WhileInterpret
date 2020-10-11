@@ -1,6 +1,6 @@
 /// <reference path="./expressionBase.ts"/>
 
-class VarExpression<T extends varFunctionNames<Variable>> extends BaseExpression {
+class VarExpression<T extends varFunctionNames<Variable> = varFunctionNames<Variable>> extends BaseExpression {
     public mainVariable: Evaluable;
     public functionName: T;
     public additionalValues: Evaluable[]; //Parameters<Variable[T]>;
